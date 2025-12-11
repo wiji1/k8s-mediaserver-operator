@@ -3,9 +3,8 @@
 # Declare variables to be passed into your templates.
 
 general:
-  ingress_host: k8s-mediaserver.k8s.test
-  plex_ingress_host: k8s-plex.k8s.test
-  jellyfin_ingress_host: k8s-jelly.k8s.test
+  ingress_host: media.wiji.dev
+  jellyfin_ingress_host: media.wiji.dev
   image_tag: latest
   podDistribution: cluster # can be "spread" or "cluster"
   #UID to run the process with
@@ -25,13 +24,12 @@ general:
       movies: media/movies
       downloads: downloads
       transmission: transmission
-      sabnzbd: sabnzbd
       config: config
     volumes: {}
     #  hostPath:
     #    path: /mnt/share
   ingress:
-    ingressClassName: ""
+    ingressClassName: "traefik"
   nodeSelector: {}
 
 sonarr:
@@ -55,16 +53,12 @@ sonarr:
       enabled: false
       secretName: ""
   resources: {}
-  volume: {}
-  # name: pvc-sonarr-config
-  # storageClassName: longhorn
-  # annotations:
-  #   my-annotation/test: my-value
-  # labels:
-  #   my-label/test: my-other-value
-  # accessModes: ReadWriteOnce
-  # storage: 5Gi
-  # selector: {}
+  volume:
+    name: pvc-sonarr-config
+    storageClassName: local-path
+    accessModes: ReadWriteOnce
+    storage: 5Gi
+    selector: {}
 
 radarr:
   enabled: true
@@ -87,44 +81,12 @@ radarr:
       enabled: false
       secretName: ""
   resources: {}
-  volume: {}
-  # name: pvc-radarr-config
-  # storageClassName: longhorn
-  # annotations: {}
-  # labels: {}
-  # accessModes: ReadWriteOnce
-  # storage: 5Gi
-  # selector: {}
-
-jackett:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/jackett
-    nodeSelector: {}
-    port: 9117
-  service:
-    type: ClusterIP
-    port: 9117
-    nodePort:
-    extraLBService: false
-    extraLBAnnotations: {}
-    # Defines an additional LB service, requires cloud provider service or MetalLB
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /jackett
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  volume: {}
-  #  name: pvc-jackett-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
+  volume:
+    name: pvc-radarr-config
+    storageClassName: local-path
+    accessModes: ReadWriteOnce
+    storage: 5Gi
+    selector: {}
 
 transmission:
   enabled: true
@@ -174,46 +136,6 @@ transmission:
   #  storage: 5Gi
   #  selector: {}
 
-sabnzbd:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/sabnzbd
-    nodeSelector: {}
-    port:
-      http: 8080
-      https: 9090
-  service:
-    http:
-      type: ClusterIP
-      port: 8080
-      nodePort:
-      # Defines an additional LB service, requires cloud provider service or MetalLB
-      extraLBService: false
-      extraLBAnnotations: {}
-    https:
-      type: ClusterIP
-      port: 9090
-      nodePort:
-      # Defines an additional LB service, requires cloud provider service or MetalLB
-      extraLBService: false
-      extraLBAnnotations: {}
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /sabnzbd
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  volume: {}
-  #  name: pvc-plex-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
-
 prowlarr:
   enabled: true
   container:
@@ -244,45 +166,8 @@ prowlarr:
   #  storage: 5Gi
   #  selector: {}
 
-plex:
-  enabled: true
-  claim: "CHANGEME"
-  replicaCount: 1
-  container:
-    image: docker.io/linuxserver/plex
-    nodeSelector: {}
-    port: 32400
-  service:
-    type: ClusterIP
-    port: 32400
-    nodePort:
-    # Defines an additional LB service, requires cloud provider service or MetalLB
-    extraLBService: false
-    extraLBAnnotations: {}
-  ingress:
-    enabled: true
-    annotations: {}
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  #  limits:
-  #    cpu: 100m
-  #    memory: 100Mi
-  #  requests:
-  #    cpu: 100m
-  #    memory: 100Mi
-  volume: {}
-  #  name: pvc-plex-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
-
 jellyfin:
-  enabled: false
+  enabled: true
   replicaCount: 1
   container:
     image: docker.io/linuxserver/jellyfin
