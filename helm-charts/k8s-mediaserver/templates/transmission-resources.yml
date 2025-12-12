@@ -230,4 +230,158 @@ spec:
             app.kubernetes.io/instance: {{ .Release.Name }}
       {{- end }}
 ---
-# Services, ingress, PVCs remain unchanged
+### SERVICES
+apiVersion: v1
+kind: Service
+metadata:
+  name: transmission
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.transmission.service.utp.type }}
+  ports:
+    - port: {{ .Values.transmission.service.utp.port }}
+      targetPort: {{ .Values.transmission.container.port.utp }}
+      protocol: TCP
+      name: trans-port
+{{ if eq .Values.transmission.service.utp.type "NodePort" }}
+      nodePort: {{ .Values.transmission.service.utp.nodePort }}
+{{ end }}
+  selector:
+    app: transmission
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transmission-peer-tcp
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.transmission.service.peer.type }}
+  ports:
+    - port: {{ .Values.transmission.service.peer.port }}
+      targetPort: {{ .Values.transmission.container.port.peer }}
+      protocol: TCP
+      name: trans-peer-tcp
+{{ if eq .Values.transmission.service.peer.type "NodePort" }}
+      nodePort: {{ .Values.transmission.service.peer.nodePort }}
+{{ end }}
+  selector:
+    app: transmission
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transmission-peer-udp
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.transmission.service.peer.type }}
+  ports:
+    - port: {{ .Values.transmission.service.peer.port }}
+      targetPort: {{ .Values.transmission.container.port.peer }}
+      protocol: UDP
+      name: trans-peer-udp
+{{ if eq .Values.transmission.service.peer.type "NodePort" }}
+      nodePort: {{ .Values.transmission.service.peer.nodePortUDP }}
+{{ end }}
+  selector:
+    app: transmission
+---
+{{ if .Values.transmission.service.utp.extraLBService }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: transmission-lb
+  {{- with .Values.transmission.service.utp.extraLBAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {{ .Values.transmission.service.utp.port }}
+      targetPort: {{ .Values.transmission.container.port.utp }}
+      protocol: TCP
+      name: trans-port
+  selector:
+    app: transmission
+---
+{{ end }}
+{{ if .Values.transmission.service.peer.extraLBService }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: transmission-lb-peer-tcp
+  {{- with .Values.transmission.service.peer.extraLBAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {{ .Values.transmission.service.peer.port }}
+      targetPort: {{ .Values.transmission.container.port.peer }}
+      protocol: TCP
+      name: trans-peer-tcp
+  selector:
+    app: transmission
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: transmission-lb-peer-udp
+  {{- with .Values.transmission.service.peer.extraLBAnnotations }}
+  annotations:
+    {{- . | toYaml | nindent 4 }}
+  {{- end }}
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+spec:
+  type: LoadBalancer
+  ports:
+    - port: {{ .Values.transmission.service.peer.port }}
+      targetPort: {{ .Values.transmission.container.port.peer }}
+      protocol: UDP
+      name: trans-peer-udp
+  selector:
+    app: transmission
+{{ end }}
+---
+### INGRESS
+{{ if .Values.transmission.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: transmission
+  labels:
+    {{- include "k8s-mediaserver.labels" . | nindent 4 }}
+  {{- with .Values.transmission.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.transmission.ingress.tls.enabled }}
+  tls:
+    - hosts:
+        - {{ .Values.general.ingress_host | quote }}
+      secretName: {{ .Values.transmission.ingress.tls.secretName }}
+{{ end }}
+  ingressClassName: {{ .Values.general.ingress.ingressClassName }}
+  rules:
+    - host: {{ .Values.general.ingress_host | quote }}
+      http:
+        paths:
+          - path: {{ .Values.transmission.ingress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: transmission
+                port:
+                  number: {{ .Values.transmission.service.utp.port }}
+{{ end }}
+{{ end }}
