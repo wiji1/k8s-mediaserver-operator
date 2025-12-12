@@ -5,6 +5,7 @@
 general:
   ingress_host: media.wiji.dev
   jellyfin_ingress_host: media.wiji.dev
+  seerr_ingress_host: watch.wiji.dev
   image_tag: latest
   podDistribution: cluster # can be "spread" or "cluster"
   #UID to run the process with

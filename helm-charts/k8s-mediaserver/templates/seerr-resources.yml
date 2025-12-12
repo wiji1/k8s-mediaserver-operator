@@ -205,10 +205,10 @@ spec:
 {{ end }}
   ingressClassName: {{ .Values.general.ingress.ingressClassName }}
   rules:
-    - host: {{ .Values.general.ingress_host | quote }}
+    - host: {{ .Values.general.seer_ingress_host | quote }}
       http:
         paths:
-          - path: {{ .Values.seerr.ingress.path }}
+          - path: /
             pathType: Prefix
             backend:
               service:
