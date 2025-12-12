@@ -90,6 +90,15 @@ spec:
         {{- include "k8s-mediaserver.selectorLabels" . | nindent 8 }}
         app: transmission
     spec:
+      dnsPolicy: "None"
+      dnsConfig:
+        nameservers:
+          - 1.1.1.1   # Cloudflare DNS
+          - 8.8.8.8   # Google DNS
+        searches:
+          - media.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
       securityContext:
         fsGroup: {{ .Values.general.pgid }}
       initContainers:
