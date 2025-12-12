@@ -171,7 +171,7 @@ seerr:
   container:
     registry: docker.io
     repository: seerr/seerr
-    tag: 'latest'
+    tag: 'sha-15356df'
     pullPolicy: IfNotPresent
     nodeSelector: {}
     port: 5055
