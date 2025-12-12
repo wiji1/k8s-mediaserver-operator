@@ -4,6 +4,17 @@
 ## INIT-CONTAINER
 apiVersion: v1
 data:
+  init-transmission.sh: |
+    #!/bin/bash
+    echo "### Initializing config ###"
+    chown -R {{ .Values.general.puid }}:{{ .Values.general.pgid }} /transmission-config
+    if [ ! -f /transmission-config/settings.json ]; then
+        cp /init-transmission/settings.json /transmission-config/settings.json
+        echo "### No configuration found, initialized with default settings ###"
+    else
+        echo "### Configuration already exists, skipping ###"
+    fi
+
   settings.json: |
     {
       "alt-speed-time-enabled": false,
@@ -116,6 +127,23 @@ spec:
       securityContext:
         fsGroup: {{ .Values.general.pgid }}
       initContainers:
+        - name: config-transmission
+          image: docker.io/ubuntu:groovy
+          command: ["/init-transmission/init-transmission.sh"]
+          volumeMounts:
+            - mountPath: /init-transmission
+              name: init-files-transmission
+            {{- if .Values.transmission.volume }}
+            - name: {{ .Values.transmission.volume.name }}
+              mountPath: /transmission-config
+            {{- else }}
+            - name: mediaserver-volume
+              mountPath: "/transmission-config"
+              subPath: "{{ .Values.general.storage.subPaths.config }}/transmission"
+            {{- end }}
+          securityContext:
+            runAsUser: {{ .Values.general.puid }}
+            runAsGroup: {{ .Values.general.pgid }}
         - name: fix-downloads-permissions
           image: busybox
           command: ["sh", "-c", "mkdir -p /downloads/{{ .Values.general.storage.subPaths.transmission }}/complete /downloads/{{ .Values.general.storage.subPaths.transmission }}/incomplete && chown -R {{ .Values.general.puid }}:{{ .Values.general.pgid }} /downloads"]
