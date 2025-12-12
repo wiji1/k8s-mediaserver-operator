@@ -10,9 +10,7 @@ data:
     chown -R {{ .Values.general.puid }}:{{ .Values.general.pgid }} /transmission-config
     if [ ! -f /transmission-config/settings.json ]; then
         cp /init-transmission/settings.json /transmission-config/settings.json
-        echo "### No configuration found, initialized with default settings ###"
-    else
-        echo "### Configuration already exists, skipping ###"
+        echo "### No configuration found, initialized with default settings ###"z
     fi
 
   settings.json: |
