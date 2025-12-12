@@ -116,6 +116,29 @@ spec:
       port: 9696
       type: ClusterIP
     volume: {}
+  seerr:
+    container:
+      image: docker.io/seerr/seerr
+      logLevel: info
+      nodeSelector: {}
+      port: 5055
+      timezone: UTC
+    enabled: true
+    ingress:
+      annotations: {}
+      enabled: true
+      path: /seerr
+      tls:
+        enabled: false
+        secretName: ""
+    resources: {}
+    service:
+      extraLBAnnotations: {}
+      extraLBService: false
+      nodePort: null
+      port: 5055
+      type: ClusterIP
+    volume: {}
   radarr:
     container:
       image: docker.io/linuxserver/radarr

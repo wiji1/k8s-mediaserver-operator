@@ -23,6 +23,8 @@ trackers for torrents.
 
 [Prowlarr](https://github.com/Prowlarr/Prowlarr "Prowlarr") - An indexer manager/proxy built on the popular \*arr .net/reactjs base stack to integrate with your various PVR apps. Prowlarr supports management of both Torrent Trackers and Usenet Indexers.
 
+[Seerr](https://github.com/seerr-team/seerr "Seerr") - A free and open source software application for managing requests for your media library. It integrates with Jellyfin, Plex, Emby, Sonarr, and Radarr to provide a seamless request management system.
+
 [Transmission](https://transmissionbt.com/ "Transmission") - A fast, easy and reliable torrent client.
 
 [Sabnzbd](https://sabnzbd.org/ "Sabnzbd") - A free and easy binary newsreader.
@@ -85,6 +87,7 @@ With default settings, your applications will run in these paths:
 | Transmission | http://k8s-mediaserver.k8s.test/transmission |
 | Jackett      | http://k8s-mediaserver.k8s.test/jackett      |
 | Prowlarr     | http://k8s-mediaserver.k8s.test/prowlarr     |
+| Seerr        | http://k8s-mediaserver.k8s.test/seerr        |
 | Jellyfin     | http://k8s-jelly.k8s.test/                   |
 | PLEX         | http://k8s-plex.k8s.test/                    |
 
@@ -277,6 +280,30 @@ letting some customization to fit the resource inside your cluster.
 | prowlarr.ingress.tls.secretName             | Name of the secret holding certificates for the secure ingress                                                  | ""                             |
 | prowlarr.resources                          | Limits and Requests for the container                                                                           | {}                             |
 | prowlarr.volume                             | If set, Plex will create a PVC for it's config volume, else it will be put on general.storage.subPaths.config   | {}                             |
+
+### Seerr
+
+| Config path                              | Meaning                                                                                                       | Default                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| seerr.enabled                            | Flag if you want to enable Seerr                                                                              | true                       |
+| seerr.container.port                     | The port in use by the container                                                                              | 5055                       |
+| seerr.container.nodeSelector             | Node Selector for the Seerr pods                                                                              | {}                         |
+| seerr.container.image                    | The image used by the container                                                                               | docker.io/seerr/seerr      |
+| seerr.container.tag                      | The tag used by the container                                                                                 | null                       |
+| seerr.container.timezone                 | Timezone for Seerr (TZ environment variable)                                                                  | UTC                        |
+| seerr.container.logLevel                 | Log level for Seerr (info, debug, warn, error)                                                                | info                       |
+| seerr.service.type                       | The kind of Service (ClusterIP/NodePort/LoadBalancer)                                                         | ClusterIP                  |
+| seerr.service.port                       | The port assigned to the service                                                                              | 5055                       |
+| seerr.service.nodePort                   | In case of service.type NodePort, the nodePort to use                                                         | ""                         |
+| seerr.service.extraLBService             | If true, creates an additional LoadBalancer service with '-lb' suffix (requires a cloud provider or metalLB)  | false                      |
+| seerr.service.extraLBService.annotations | Instead of using extraLBService as a bool, you can use it as a map to define annotations on the loadbalancer  | null                       |
+| seerr.ingress.enabled                    | If true, creates the ingress resource for the application                                                     | true                       |
+| seerr.ingress.annotations                | Additional field for annotations, if needed                                                                   | {}                         |
+| seerr.ingress.path                       | The path where the application is exposed                                                                     | /seerr                     |
+| seerr.ingress.tls.enabled                | If true, tls is enabled                                                                                       | false                      |
+| seerr.ingress.tls.secretName             | Name of the secret holding certificates for the secure ingress                                                | ""                         |
+| seerr.resources                          | Limits and Requests for the container                                                                         | {}                         |
+| seerr.volume                             | If set, Seerr will create a PVC for it's config volume, else it will be put on general.storage.subPaths.config | {}                         |
 
 ### Transmission
 

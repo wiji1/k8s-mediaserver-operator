@@ -166,6 +166,37 @@ prowlarr:
   #  storage: 5Gi
   #  selector: {}
 
+seerr:
+  enabled: true
+  container:
+    image: docker.io/seerr/seerr
+    nodeSelector: {}
+    port: 5055
+    timezone: UTC
+    logLevel: info
+  service:
+    type: ClusterIP
+    port: 5055
+    nodePort:
+    extraLBService: false
+    extraLBAnnotations: {}
+  ingress:
+    enabled: true
+    annotations: {}
+    path: /seerr
+    tls:
+      enabled: false
+      secretName: ""
+  resources: {}
+  volume: {}
+  #  name: pvc-seerr-config
+  #  storageClassName: longhorn
+  #  annotations: {}
+  #  labels: {}
+  #  accessModes: ReadWriteOnce
+  #  storage: 5Gi
+  #  selector: {}
+
 jellyfin:
   enabled: true
   replicaCount: 1
