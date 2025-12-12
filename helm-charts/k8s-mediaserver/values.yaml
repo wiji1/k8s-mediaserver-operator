@@ -169,9 +169,9 @@ prowlarr:
 seerr:
   enabled: true
   container:
-    registry: ghcr.io
-    repository: seerr-team/seerr
-    tag: ''
+    registry: docker.io
+    repository: seerr/seerr
+    tag: 'latest'
     pullPolicy: IfNotPresent
     nodeSelector: {}
     port: 5055
