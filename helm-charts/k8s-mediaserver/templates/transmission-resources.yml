@@ -5,13 +5,15 @@
 apiVersion: v1
 data:
   init-transmission.sh: |
-    #!/bin/bash
-    echo "### Initializing config ###"
-    if [ ! -f /transmission-config/settings.json ]; then
-      cp -n /init-transmission/settings.json /transmission-config/settings.json
-      echo "### No configuration found, intialized with default settings ###"
-    fi
-  settings.json: |
+    #!/bin/bash
+    echo "### Initializing config ###"
+    echo "### Setting Permissions on config folder ###"
+    chown -R {{ .Values.general.puid }}:{{ .Values.general.pgid }} /transmission-config
+    if [ ! -f /transmission-config/settings.json ]; then
+      cp -n /init-transmission/settings.json /transmission-config/settings.json
+      echo "### No configuration found, intialized with default settings ###"
+    fi
+settings.json: |
     {
         "alt-speed-down": 50,
         "alt-speed-enabled": false,
@@ -130,9 +132,6 @@ spec:
               mountPath: "/transmission-config"
               subPath: "{{ .Values.general.storage.subPaths.config }}/transmission"
           {{ end }}
-          securityContext:
-            runAsUser: {{ .Values.general.puid }}
-            runAsGroup: {{ .Values.general.pgid }}
       containers:
         - name: {{ .Chart.Name }}
           envFrom:
