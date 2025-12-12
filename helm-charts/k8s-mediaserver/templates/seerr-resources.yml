@@ -71,8 +71,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: seerr-config
-          image: "{{ .Values.seerr.container.image }}:{{ .Values.seerr.container.tag | default .Values.general.image_tag }}"
-          imagePullPolicy: Always
+          image: "{{ .Values.seerr.container.registry }}/{{ .Values.seerr.container.repository }}:{{ .Values.seerr.container.tag | default .Values.general.image_tag }}"
+          imagePullPolicy: {{ .Values.seerr.container.pullPolicy }}
           readinessProbe:
             httpGet:
               path: "/api/v1/status"

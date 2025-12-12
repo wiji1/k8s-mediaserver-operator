@@ -169,7 +169,10 @@ prowlarr:
 seerr:
   enabled: true
   container:
-    image: docker.io/seerr/seerr
+    registry: ghcr.io
+    repository: seerr-team/seerr
+    tag: ''
+    pullPolicy: IfNotPresent
     nodeSelector: {}
     port: 5055
     timezone: UTC
