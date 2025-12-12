@@ -6,12 +6,11 @@ apiVersion: v1
 data:
   init-transmission.sh: |
     #!/bin/bash
-    echo "### Initializing config ###"
+    echo "### Initializing config! ###"
     chown -R {{ .Values.general.puid }}:{{ .Values.general.pgid }} /transmission-config
-    if [ ! -f /transmission-config/settings.json ]; then
-        cp /init-transmission/settings.json /transmission-config/settings.json
-        echo "### No configuration found, initialized with default settings ###"z
-    fi
+    # FORCE COPY - always overwrite with our version
+    cp /init-transmission/settings.json /transmission-config/settings.json
+    echo "### Configuration initialized with current settings ###"
 
   settings.json: |
     {
